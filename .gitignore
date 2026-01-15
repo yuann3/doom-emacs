@@ -1,0 +1,22 @@
+# Doom Emacs generated files
+.local/
+eln-cache/
+
+# macOS
+.DS_Store
+
+# Emacs backup/autosave
+*~
+\#*\#
+.\#*
+
+# Compiled elisp
+*.elc
+
+# Local overrides (optional - uncomment if you use local.el)
+# local.el
+
+# Claude Code
+.claude/
+.agent-shell/
+CLAUDE.md

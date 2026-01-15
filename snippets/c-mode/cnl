@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: write new line
+# uuid: 
+# key: cnl
+# condition: t
+# --
+write(1, "\n", 1);
