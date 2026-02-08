@@ -59,8 +59,6 @@
 (package! base16-theme)
 (package! color-theme-sanityinc-tomorrow)
 (package! web-mode)
-(package! claude-code-ide
-  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
 (package! exec-path-from-shell)
 (package! ultra-scroll
   :recipe (:host github
