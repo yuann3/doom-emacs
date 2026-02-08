@@ -68,3 +68,8 @@
 (package! shell-maker)
 (package! acp)
 (package! agent-shell)
+(package! fzf)
+(package! agent-review
+  :recipe (:host github
+           :repo "nineluj/agent-review"
+           :files ("*.el")))

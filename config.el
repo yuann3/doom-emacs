@@ -17,6 +17,10 @@
 (setq doom-font         (font-spec :family "Berkeley Mono" :size 11)
       doom-unicode-font (font-spec :family "JetBrainsMono Nerd Font" :size 11 ))
 
+
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
 ;; (after! persp-mode
 ;;   (defun display-workspaces-in-minibuffer ()
 ;;     (with-current-buffer " *Minibuf-0*"
@@ -181,7 +185,9 @@
 (setq deft-recursive t)
 
 (after! org
-  (setq org-agenda-files '("~/Documents/Notes/org/agenda.org")))
+  (setq org-agenda-files '("~/Documents/Notes/org/agenda.org"))
+  (setq org-format-latex-options
+        (plist-put org-format-latex-options :scale 1.5)))
 
 ;; auto latex render
 (add-hook 'after-save-hook
@@ -287,31 +293,32 @@
 ;; --------------------------------------------------
 ;; Auto-Swith theme
 ;; --------------------------------------------------
-;; (use-package! auto-dark
-;;   :defer t
-;;   :init
-;;   (setq! auto-dark-themes '((doom-one) (doom-tomorrow-day)))
-;;   ;; Disable doom's theme loading mechanism (just to make sure)
-;;   (setq! doom-theme nil)
-;;   ;; Declare that all themes are safe to load.
-;;   ;; Be aware that setting this variable may have security implications if you
-;;   ;; get tricked into loading untrusted themes (via auto-dark-mode or manually).
-;;   ;; See the documentation of custom-safe-themes for details.
-;;   (setq! custom-safe-themes t)
-;;   ;; Enable auto-dark-mode at the right point in time.
-;;   ;; This is inspired by doom-ui.el. Using server-after-make-frame-hook avoids
-;;   ;; issues with an early start of the emacs daemon using systemd, which causes
-;;   ;; problems with the DBus connection that auto-dark mode relies upon.
-;;   (defun my-auto-dark-init-h ()
-;;     (auto-dark-mode)
-;;     (remove-hook 'server-after-make-frame-hook #'my-auto-dark-init-h)
-;;     (remove-hook 'after-init-hook #'my-auto-dark-init-h))
-;;   (let ((hook (if (daemonp)
-;;                   'server-after-make-frame-hook
-;;                 'after-init-hook)))
-;;     ;; Depth -95 puts this before doom-init-theme-h, which sounds like a good
-;;     ;; idea, if only for performance reasons.
-;;     (add-hook hook #'my-auto-dark-init-h -95)))
+(use-package! auto-dark
+  :defer t
+  :init
+  (setq! auto-dark-detection-method 'osascript)
+  (setq! auto-dark-themes '((doom-tomorrow-night-hc) (doom-tomorrow-day)))
+  ;; Disable doom's theme loading mechanism (just to make sure)
+  (setq! doom-theme nil)
+  ;; Declare that all themes are safe to load.
+  ;; Be aware that setting this variable may have security implications if you
+  ;; get tricked into loading untrusted themes (via auto-dark-mode or manually).
+  ;; See the documentation of custom-safe-themes for details.
+  (setq! custom-safe-themes t)
+  ;; Enable auto-dark-mode at the right point in time.
+  ;; This is inspired by doom-ui.el. Using server-after-make-frame-hook avoids
+  ;; issues with an early start of the emacs daemon using systemd, which causes
+  ;; problems with the DBus connection that auto-dark mode relies upon.
+  (defun my-auto-dark-init-h ()
+    (auto-dark-mode)
+    (remove-hook 'server-after-make-frame-hook #'my-auto-dark-init-h)
+    (remove-hook 'after-init-hook #'my-auto-dark-init-h))
+  (let ((hook (if (daemonp)
+                  'server-after-make-frame-hook
+                'after-init-hook)))
+    ;; Depth -95 puts this before doom-init-theme-h, which sounds like a good
+    ;; idea, if only for performance reasons.
+    (add-hook hook #'my-auto-dark-init-h -95)))
 
 ;; --------------------------------------------------
 ;; lsp shit
@@ -331,3 +338,18 @@
 (setq claude-code-ide-terminal-backend 'vterm)
 (setq claude-code-ide-vterm-anti-flicker t)
 (setq claude-code-ide-terminal-initialization-delay 0)
+
+;; --------------------------------------------------
+;; FZF - fuzzy file finder
+;; --------------------------------------------------
+(use-package! fzf
+  :commands (fzf-projectile fzf-git-files fzf-find-file)
+  :config
+  (setq fzf/args "-x --print-query --margin=1,0 --no-hscroll"
+        fzf/executable "fzf"
+        fzf/position-bottom t
+        fzf/window-height 15))
+
+;; Replace SPC SPC with fzf for project file search
+(map! :leader
+      :desc "Find file in project (fzf)" "SPC" #'fzf-projectile)
