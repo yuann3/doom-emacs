@@ -39,22 +39,33 @@
 (setq nerd-icons-color-icons nil)
 
 ;; --------------------------------------------------
+;; Nyan Cat modeline
+;; --------------------------------------------------
+(use-package! nyan-mode
+  :after doom-modeline
+  :config
+  (setq nyan-animate-nyancat t
+        nyan-wavy-trail t
+        nyan-bar-length 20)
+  (nyan-mode 1))
+
+;; --------------------------------------------------
 ;; Modeline tweaks
 ;; --------------------------------------------------
-(after! doom-modeline
-  (setq doom-modeline-battery                  t
-        lsp-modeline-code-actions-enable       nil
-        doom-modeline-vcs                      t
-        doom-modeline-vcs-max-length           20
-        doom-modeline-modal-icon               nil
-        doom-modeline-lsp                      nil
-        doom-modeline-lsp-perform-update-on-save nil
-        doom-modeline-workspace-name           t
-        doom-modeline-bar-width                3))
+;; (after! doom-modeline
+;;   (setq doom-modeline-battery                  t
+;;         lsp-modeline-code-actions-enable       nil
+;;         doom-modeline-vcs                      t
+;;         doom-modeline-vcs-max-length           20
+;;         doom-modeline-modal-icon               nil
+;;         doom-modeline-lsp                      nil
+;;         doom-modeline-lsp-perform-update-on-save nil
+;;         doom-modeline-workspace-name           t
+;;         doom-modeline-bar-width                3))
 
-(with-eval-after-load 'lsp-mode
-  (setq lsp-modeline-diagnostics-enable nil
-        lsp-modeline-workspace-status-enable nil))
+;; (with-eval-after-load 'lsp-mode
+;;   (setq lsp-modeline-diagnostics-enable nil
+;;         lsp-modeline-workspace-status-enable nil))
 
 
 ;; --------------------------------------------------
@@ -353,3 +364,7 @@
 ;; Replace SPC SPC with fzf for project file search
 (map! :leader
       :desc "Find file in project (fzf)" "SPC" #'fzf-projectile)
+
+;; --------------------------------------------------
+;; EAF (removed)
+;; --------------------------------------------------

@@ -71,3 +71,5 @@
   :recipe (:host github
            :repo "nineluj/agent-review"
            :files ("*.el")))
+(package! nyan-mode)
+
