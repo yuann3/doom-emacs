@@ -368,3 +368,17 @@
 ;; --------------------------------------------------
 ;; EAF (removed)
 ;; --------------------------------------------------
+
+;; --------------------------------------------------
+;; Winpulse - flash active window on focus
+;; --------------------------------------------------
+(use-package! winpulse
+  :config
+  (winpulse-mode +1))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((racket . t)))
+
+(setq org-babel-default-header-args:racket
+      '((:lang . "sicp")))

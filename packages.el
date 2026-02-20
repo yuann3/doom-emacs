@@ -72,4 +72,8 @@
            :repo "nineluj/agent-review"
            :files ("*.el")))
 (package! nyan-mode)
-
+(package! ob-racket
+  :recipe (:host github :repo "hasu/emacs-ob-racket"
+           :files ("*.el" "*.rkt")))
+(package! winpulse
+  :recipe (:host github :repo "xenodium/winpulse"))

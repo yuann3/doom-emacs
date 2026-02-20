@@ -161,7 +161,7 @@
        ;;purescript        ; javascript, but functional
        (python +lsp +pyright +pyenv +jupyter)          ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
-       ;;racket            ; a DSL for DSLs
+       racket            ; a DSL for DSLs
        ;;raku              ; the artist formerly known as perl6
        ;;rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
@@ -173,7 +173,7 @@
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        swift             ; who asked for emoji variables?
-       (scheme +racket)
+       ;;(scheme +mit)     ; broken with MIT Scheme 12.1
        ;;terra             ; Earth and Moon in alignment for performance.
        web               ; the tubes
        yaml              ; JSON, but readable
