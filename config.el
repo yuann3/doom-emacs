@@ -14,12 +14,19 @@
 (setq user-full-name "Yiyuan Li"
       user-mail-address "yy@eyuan.me")
 
-(setq doom-font         (font-spec :family "Berkeley Mono" :size 11)
-      doom-unicode-font (font-spec :family "JetBrainsMono Nerd Font" :size 11 ))
+
+(setq doom-font (font-spec :family "Berkeley Mono" :size 12)
+      doom-variable-pitch-font (font-spec :family "Gill Sans" :size 13)
+      doom-big-font (font-spec :family "Berkeley Mono" :size 17))
 
 
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+;; Frameless window with native macOS rounded corners (emacs-plus patch)
+(add-to-list 'default-frame-alist '(undecorated-round . t))
+
+;; Translucent background (emacs-plus patch)
+;; Value from 0 (fully transparent) to 100 (fully opaque)
+(add-to-list 'default-frame-alist '(alpha-background . 75))
 
 ;; (after! persp-mode
 ;;   (defun display-workspaces-in-minibuffer ()
@@ -351,6 +358,13 @@
 (setq claude-code-ide-terminal-initialization-delay 0)
 
 ;; --------------------------------------------------
+;; vterm ESC binding - C-ESC sends escape to terminal
+;; --------------------------------------------------
+(after! vterm
+  (define-key vterm-mode-map (kbd "C-<escape>") #'vterm-send-escape)
+  (define-key vterm-mode-map (kbd "C-M-[") #'vterm-send-escape))
+
+;; --------------------------------------------------
 ;; FZF - fuzzy file finder
 ;; --------------------------------------------------
 (use-package! fzf
@@ -375,6 +389,16 @@
 (use-package! winpulse
   :config
   (winpulse-mode +1))
+
+;; --------------------------------------------------
+;; Linear.app
+;; --------------------------------------------------
+(use-package! linear-app
+  :defer t
+  :commands (linear-app))
+
+(map! :leader
+      :desc "Linear issues" "l i" #'linear-app)
 
 (org-babel-do-load-languages
  'org-babel-load-languages

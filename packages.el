@@ -77,3 +77,6 @@
            :files ("*.el" "*.rkt")))
 (package! winpulse
   :recipe (:host github :repo "xenodium/winpulse"))
+(package! linear-app
+  :recipe (:local-repo "~/Developer/linear-app.el"
+           :files ("*.el")))
