@@ -14,11 +14,20 @@
 (setq user-full-name "Yiyuan Li"
       user-mail-address "yy@eyuan.me")
 
+;; --------------------------------------------------
+;; Force symbols/emoji to render as text, not colorful emoji
+;; --------------------------------------------------
+;; Use Symbols Nerd Font or a monochrome font instead of Apple Color Emoji
 
 (setq doom-font (font-spec :family "Berkeley Mono" :size 12)
       doom-variable-pitch-font (font-spec :family "Gill Sans" :size 13)
       doom-big-font (font-spec :family "Berkeley Mono" :size 17))
 
+(after! doom-ui
+  (set-fontset-font t 'emoji "Symbols Nerd Font Mono" nil 'prepend)
+  (set-fontset-font t 'symbol "Symbols Nerd Font Mono" nil 'prepend)
+  (set-fontset-font t 'emoji "Apple Symbols" nil 'append)
+  (set-fontset-font t 'symbol "Apple Symbols" nil 'append))
 
 
 ;; Frameless window with native macOS rounded corners (emacs-plus patch)
@@ -43,7 +52,6 @@
 ;; (setq catppuccin-flavor 'mocha) ;; 'latte, 'macchiato, or 'mocha
 ;; (setq display-line-numbers-type 'relative)
 (setq org-directory "~/Documents/Notes/org")
-(setq nerd-icons-color-icons nil)
 
 ;; --------------------------------------------------
 ;; Nyan Cat modeline
@@ -66,8 +74,8 @@
 ;;         doom-modeline-vcs-max-length           20
 ;;         doom-modeline-modal-icon               nil
 ;;         doom-modeline-lsp                      nil
-;;         doom-modeline-lsp-perform-update-on-save nil
-;;         doom-modeline-workspace-name           t
+;;         doom-modeline-lsp-perform-update-on-save ni  
+;;         doom-modeline-workspace-name           
 ;;         doom-modeline-bar-width                3))
 
 ;; (with-eval-after-load 'lsp-mode
@@ -365,19 +373,24 @@
   (define-key vterm-mode-map (kbd "C-M-[") #'vterm-send-escape))
 
 ;; --------------------------------------------------
-;; FZF - fuzzy file finder
+;; eee.el - launch TUI tools (fzf, yazi, lazygit, etc.) in external terminal
 ;; --------------------------------------------------
-(use-package! fzf
-  :commands (fzf-projectile fzf-git-files fzf-find-file)
+(use-package! eee
+  :commands (ee-find ee-rg ee-lazygit ee-yazi ee-yazi-project ee-recentf ee-line)
   :config
-  (setq fzf/args "-x --print-query --margin=1,0 --no-hscroll"
-        fzf/executable "fzf"
-        fzf/position-bottom t
-        fzf/window-height 15))
+  (setq ee-terminal-command "/Applications/Alacritty.app/Contents/MacOS/alacritty"))
 
-;; Replace SPC SPC with fzf for project file search
-(map! :leader
-      :desc "Find file in project (fzf)" "SPC" #'fzf-projectile)
+(after! eee
+  (ee-define "ee-find"
+    (ee-get-project-dir-or-current-dir)
+    (expand-file-name "scripts/eee-find-local.sh" doom-user-dir)
+    (list (ee-region-text))
+    ee-jump-from))
+
+;; Replace SPC SPC with eee fzf for project file search
+(after! doom-keybinds
+  (map! :leader
+        :desc "Find file in project (fzf)" "SPC" #'ee-find))
 
 ;; --------------------------------------------------
 ;; EAF (removed)
@@ -406,3 +419,22 @@
 
 (setq org-babel-default-header-args:racket
       '((:lang . "sicp")))
+
+;; --------------------------------------------------
+;; Eat - Emulate A Terminal
+;; --------------------------------------------------
+(use-package! eat
+  :commands (eat eat-project)
+  :config
+  ;; Enable shell integration for better directory tracking
+  (add-hook 'eshell-load-hook #'eat-eshell-mode)
+  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+  ;; Close buffer when process exits
+  (setq eat-kill-buffer-on-exit t)
+  ;; Use xterm-256color as TERM for better compatibility
+  (setq eat-term-name "xterm-256color")
+  ;; Enable shell integration (sends EAT_SHELL_INTEGRATION_DIR to shell)
+  (eat-compile-terminfo))
+
+(setenv "CLAUDECODE" nil)
+

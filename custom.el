@@ -33,6 +33,8 @@
            (shell-command (concat "c_formatter_42 " filename))
            (revert-buffer t t t)
            (message "Formatted %s with c_formatter_42" filename)))))))
+ '(safe-local-variable-directories
+   '("/Users/yuan/Developer/42Core/minishell/" "/Users/yuan/.doom.d/" "~/.emacs.d/"))
  '(zoom-window-mode-line-color "Black"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

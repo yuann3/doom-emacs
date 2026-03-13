@@ -66,7 +66,9 @@
 (package! shell-maker)
 (package! acp)
 (package! agent-shell)
-(package! fzf)
+(package! eee
+  :recipe (:host github :repo "eval-exec/eee.el"
+           :files ("*.el" "*.sh")))
 (package! agent-review
   :recipe (:host github
            :repo "nineluj/agent-review"
@@ -80,3 +82,13 @@
 (package! linear-app
   :recipe (:local-repo "~/Developer/linear-app.el"
            :files ("*.el")))
+(package! eat
+  :recipe (:host codeberg
+           :repo "akib/emacs-eat"
+           :files ("*.el" ("term" "term/*.el") "*.texi"
+                   "*.ti" ("terminfo/e" "terminfo/e/*")
+                   ("terminfo/65" "terminfo/65/*")
+                   ("integration" "integration/*")
+                   (:exclude ".dir-locals.el" "*-tests.el"))))
+(package! claude-code-ide
+  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
