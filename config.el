@@ -4,7 +4,9 @@
 (use-package! agent-shell
   :defer t
   :commands (agent-shell
-             agent-shell-anthropic-start-claude-code))
+             agent-shell-anthropic-start-claude-code)
+  :config
+  (setq agent-shell-preferred-agent-config 'claude-code))
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
@@ -23,11 +25,21 @@
       doom-variable-pitch-font (font-spec :family "Gill Sans" :size 13)
       doom-big-font (font-spec :family "Berkeley Mono" :size 17))
 
-(after! doom-ui
-  (set-fontset-font t 'emoji "Symbols Nerd Font Mono" nil 'prepend)
-  (set-fontset-font t 'symbol "Symbols Nerd Font Mono" nil 'prepend)
-  (set-fontset-font t 'emoji "Apple Symbols" nil 'append)
-  (set-fontset-font t 'symbol "Apple Symbols" nil 'append))
+;; Stop Emacs from bypassing fontset for symbols
+(setq use-default-font-for-symbols nil)
+
+;; Use after-setting-font-hook so Doom's font init doesn't clobber our settings
+;; (see doomemacs#3298, doomemacs#7036)
+(add-hook! 'after-setting-font-hook
+  (defun my/force-nerd-font-for-symbols ()
+    "Use JetBrainsMono Nerd Font for symbols, keep Apple Color Emoji for actual emoji."
+    (dolist (fontset '(t "fontset-default"))
+      ;; Use JetBrainsMono Nerd Font for symbols (prevents ASCII->emoji weirdness)
+      (set-fontset-font fontset 'symbol "JetBrainsMono Nerd Font Mono")
+      ;; Keep Apple Color Emoji for actual emoji characters
+      (set-fontset-font fontset 'emoji "Apple Color Emoji")
+      ;; Fallback for anything not covered
+      (set-fontset-font fontset 'symbol "Apple Symbols" nil 'append))))
 
 
 ;; Frameless window with native macOS rounded corners (emacs-plus patch)
@@ -54,33 +66,20 @@
 (setq org-directory "~/Documents/Notes/org")
 
 ;; --------------------------------------------------
-;; Nyan Cat modeline
+;; Modeline (+light) & Nyan Cat
 ;; --------------------------------------------------
+(setq! +modeline-bar-width 3)
+
 (use-package! nyan-mode
-  :after doom-modeline
+  :hook (doom-init-ui . nyan-mode)
   :config
   (setq nyan-animate-nyancat t
         nyan-wavy-trail t
         nyan-bar-length 20)
-  (nyan-mode 1))
-
-;; --------------------------------------------------
-;; Modeline tweaks
-;; --------------------------------------------------
-;; (after! doom-modeline
-;;   (setq doom-modeline-battery                  t
-;;         lsp-modeline-code-actions-enable       nil
-;;         doom-modeline-vcs                      t
-;;         doom-modeline-vcs-max-length           20
-;;         doom-modeline-modal-icon               nil
-;;         doom-modeline-lsp                      nil
-;;         doom-modeline-lsp-perform-update-on-save ni  
-;;         doom-modeline-workspace-name           
-;;         doom-modeline-bar-width                3))
-
-;; (with-eval-after-load 'lsp-mode
-;;   (setq lsp-modeline-diagnostics-enable nil
-;;         lsp-modeline-workspace-status-enable nil))
+  ;; +light includes mode-line-misc-info on its RHS, which renders
+  ;; global-mode-string — push nyan there so it actually shows up.
+  (unless (member '(:eval (nyan-create)) global-mode-string)
+    (push '(:eval (nyan-create)) global-mode-string)))
 
 
 ;; --------------------------------------------------
@@ -349,8 +348,13 @@
 ;; --------------------------------------------------
 ;; lsp shit
 ;; --------------------------------------------------
-(after! c-ts-mode
-  (add-hook 'c++-ts-mode-hook #'clang-format-on-save-mode))
+;; Kill inlay hints (the grey inline type/parameter annotations)
+(after! eglot
+  (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1))))
+
+;; Disable eglot formatting for C/C++ (clang-format default style mangles 42 brace style)
+(setq-hook! '(c-mode-hook c-ts-mode-hook c++-mode-hook c++-ts-mode-hook)
+  +format-with-lsp nil)
 
 (use-package! claude-code-ide
   :defer t
@@ -391,6 +395,11 @@
 (after! doom-keybinds
   (map! :leader
         :desc "Find file in project (fzf)" "SPC" #'ee-find))
+
+;; --------------------------------------------------
+;; EWW – open in current buffer, not a popup
+;; --------------------------------------------------
+(set-popup-rule! "^\\*eww\\*" :ignore t)
 
 ;; --------------------------------------------------
 ;; EAF (removed)
@@ -438,3 +447,14 @@
 
 (setenv "CLAUDECODE" nil)
 
+
+;; --------------------------------------------------
+;; ShaderView - Real-time GLSL shader preview
+;; --------------------------------------------------
+(use-package! shaderview
+  :load-path "~/.emacs.d/shaderview/"
+  :commands (shaderview-mode shaderview-open shaderview-stop shaderview-save)
+  :config
+  (setq shaderview-target-fps 30
+        shaderview-max-width 960
+        shaderview-max-height 540))
