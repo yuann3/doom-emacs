@@ -3,19 +3,35 @@
 
 (use-package! agent-shell
   :defer t
-  :commands (agent-shell
-             agent-shell-anthropic-start-claude-code)
+  :commands (agent-shell)
+
   :config
-  (setq agent-shell-preferred-agent-config 'claude-code))
+  (setq agent-shell-user-message-expand-by-default t))
+
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
 ;; --------------------------------------------------
-;; Basic identity & fonts
+;; Basic identity & tweaking
 ;; --------------------------------------------------
 (setq user-full-name "Yiyuan Li"
       user-mail-address "yy@eyuan.me")
 
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+
+(setq redisplay-skip-fontification-on-input t)
+
+(setq read-process-output-max (* 4 1024 1024)) 
+
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+
+(setq kill-do-not-save-duplicates t)
+
+(add-hook 'after-save-hook
+          #'executable-make-buffer-file-executable-if-script-p)
 ;; --------------------------------------------------
 ;; Force symbols/emoji to render as text, not colorful emoji
 ;; --------------------------------------------------
@@ -226,8 +242,20 @@
 ;; macos
 ;; --------------------------------------------------
 (when (eq system-type 'darwin)
-  (dolist (ev '([C-mouse-4] [C-mouse-5] [C-mouse-6] [C-mouse-7]))
-    (define-key input-decode-map ev [ignore])))
+  ;; Disable trackpad pinch-to-zoom
+  (global-set-key [pinch] 'ignore)
+
+  ;; Disable Ctrl+scroll-wheel zoom (buffer-local text scale)
+  (global-set-key [C-wheel-up] 'ignore)
+  (global-set-key [C-wheel-down] 'ignore)
+  (global-set-key [C-mouse-4] 'ignore)
+  (global-set-key [C-mouse-5] 'ignore)
+
+  ;; Disable Ctrl+Meta+scroll-wheel zoom (global text scale)
+  (global-set-key [C-M-wheel-up] 'ignore)
+  (global-set-key [C-M-wheel-down] 'ignore)
+  (global-set-key [C-M-mouse-4] 'ignore)
+  (global-set-key [C-M-mouse-5] 'ignore))
 
 ;; --------------------------------------------------
 ;; Web mode (i hate web but i have to do it cuz this is my job)
@@ -322,7 +350,7 @@
   :defer t
   :init
   (setq! auto-dark-detection-method 'osascript)
-  (setq! auto-dark-themes '((doom-tomorrow-night-hc) (doom-tomorrow-day)))
+  (setq! auto-dark-themes '((doom-gruvbox) (doom-tomorrow-day)))
   ;; Disable doom's theme loading mechanism (just to make sure)
   (setq! doom-theme nil)
   ;; Declare that all themes are safe to load.
