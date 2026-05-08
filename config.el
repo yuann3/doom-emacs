@@ -350,7 +350,7 @@
   :defer t
   :init
   (setq! auto-dark-detection-method 'osascript)
-  (setq! auto-dark-themes '((doom-gruvbox) (doom-tomorrow-day)))
+  (setq! auto-dark-themes '((doom-tomorrow-night-hc) (doom-tomorrow-day)))
   ;; Disable doom's theme loading mechanism (just to make sure)
   (setq! doom-theme nil)
   ;; Declare that all themes are safe to load.
@@ -486,3 +486,19 @@
   (setq shaderview-target-fps 30
         shaderview-max-width 960
         shaderview-max-height 540))
+
+;; --------------------------------------------------
+;; Org image
+;; --------------------------------------------------
+(after! org-download
+      (setq org-download-method 'directory)
+      (setq org-download-image-dir (concat (file-name-sans-extension (buffer-file-name)) "-img"))
+      (setq org-download-image-org-width 600)
+      (setq org-download-link-format "[[file:%s]]\n"
+        org-download-abbreviate-filename-function #'file-relative-name)
+      (setq org-download-link-format-function #'org-download-link-format-function-default))
+
+(map! :after org-download
+      :map org-mode-map
+      :localleader
+      :desc "Paste clipboard image" "V" #'org-download-clipboard)
