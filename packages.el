@@ -50,8 +50,7 @@
 (package! gptel :recipe (:nonrecursive t))
 (package! catppuccin-theme)
 (package! org-gcal)
-(use-package org-fragtog
-  :hook (org-mode . org-fragtog-mode))
+(package! org-fragtog)
 (package! zoom-window)
 (package! modus-themes)
 (package! auto-dark)
@@ -90,3 +89,13 @@
                    ("integration" "integration/*")
                    (:exclude ".dir-locals.el" "*-tests.el"))))
 (package! org-download)
+(package! ember-theme
+  :recipe (:host github
+           :repo "ember-theme/emacs"
+           :local-repo "ember-theme"))
+(package! ghostel
+  :recipe (:host github :repo "dakra/ghostel"
+           :files ("lisp/*.el")))
+(package! evil-ghostel
+  :recipe (:host github :repo "dakra/ghostel"
+           :files ("extensions/evil-ghostel/*.el")))

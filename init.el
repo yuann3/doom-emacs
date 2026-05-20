@@ -192,8 +192,6 @@
        ;;irc               ; how neckbeards socialize
        ;;(rss +org)        ; emacs as an RSS reader
 
-       (global-diff-hl-mode)
-
        :config
        ;;literate
        (default +bindings +smartparens))

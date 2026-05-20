@@ -32,6 +32,10 @@
 
 (add-hook 'after-save-hook
           #'executable-make-buffer-file-executable-if-script-p)
+
+(setq-default line-spacing nil)
+(setq line-spacing nil)
+
 ;; --------------------------------------------------
 ;; Force symbols/emoji to render as text, not colorful emoji
 ;; --------------------------------------------------
@@ -63,7 +67,7 @@
 
 ;; Translucent background (emacs-plus patch)
 ;; Value from 0 (fully transparent) to 100 (fully opaque)
-(add-to-list 'default-frame-alist '(alpha-background . 75))
+(add-to-list 'default-frame-alist '(alpha-background . 100))
 
 ;; (after! persp-mode
 ;;   (defun display-workspaces-in-minibuffer ()
@@ -86,16 +90,16 @@
 ;; --------------------------------------------------
 (setq! +modeline-bar-width 3)
 
-(use-package! nyan-mode
-  :hook (doom-init-ui . nyan-mode)
-  :config
-  (setq nyan-animate-nyancat t
-        nyan-wavy-trail t
-        nyan-bar-length 20)
-  ;; +light includes mode-line-misc-info on its RHS, which renders
-  ;; global-mode-string — push nyan there so it actually shows up.
-  (unless (member '(:eval (nyan-create)) global-mode-string)
-    (push '(:eval (nyan-create)) global-mode-string)))
+;; (use-package! nyan-mode
+;;   :hook (doom-init-ui . nyan-mode)
+;;   :config
+;;   (setq nyan-animate-nyancat t
+;;         nyan-wavy-trail t
+;;         nyan-bar-length 20)
+;;   ;; +light includes mode-line-misc-info on its RHS, which renders
+;;   ;; global-mode-string — push nyan there so it actually shows up.
+;;   (unless (member '(:eval (nyan-create)) global-mode-string)
+;;     (push '(:eval (nyan-create)) global-mode-string)))
 
 
 ;; --------------------------------------------------
@@ -167,7 +171,7 @@
       evil-visual-state-cursor      'box
       evil-replace-state-cursor     'box
       evil-emacs-state-cursor       'box)
-(remove-hook 'diff-hl-mode-hook #'+vc-gutter-fix-diff-hl-faces-h)
+(remove-hook 'diff-hl-mode-hook #'+vc-gutter-make-diff-hl-faces-transparent-h)
 
 ;; --------------------------------------------------
 ;; Dirvish
@@ -229,6 +233,9 @@
   (setq org-agenda-files '("~/Documents/Notes/org/agenda.org"))
   (setq org-format-latex-options
         (plist-put org-format-latex-options :scale 1.5)))
+
+(use-package! org-fragtog
+  :hook (org-mode . org-fragtog-mode))
 
 ;; auto latex render
 (add-hook 'after-save-hook
@@ -346,32 +353,35 @@
 ;; --------------------------------------------------
 ;; Auto-Swith theme
 ;; --------------------------------------------------
-(use-package! auto-dark
-  :defer t
-  :init
-  (setq! auto-dark-detection-method 'osascript)
-  (setq! auto-dark-themes '((doom-tomorrow-night-hc) (doom-tomorrow-day)))
-  ;; Disable doom's theme loading mechanism (just to make sure)
-  (setq! doom-theme nil)
-  ;; Declare that all themes are safe to load.
-  ;; Be aware that setting this variable may have security implications if you
-  ;; get tricked into loading untrusted themes (via auto-dark-mode or manually).
-  ;; See the documentation of custom-safe-themes for details.
-  (setq! custom-safe-themes t)
-  ;; Enable auto-dark-mode at the right point in time.
-  ;; This is inspired by doom-ui.el. Using server-after-make-frame-hook avoids
-  ;; issues with an early start of the emacs daemon using systemd, which causes
-  ;; problems with the DBus connection that auto-dark mode relies upon.
-  (defun my-auto-dark-init-h ()
-    (auto-dark-mode)
-    (remove-hook 'server-after-make-frame-hook #'my-auto-dark-init-h)
-    (remove-hook 'after-init-hook #'my-auto-dark-init-h))
-  (let ((hook (if (daemonp)
-                  'server-after-make-frame-hook
-                'after-init-hook)))
-    ;; Depth -95 puts this before doom-init-theme-h, which sounds like a good
-    ;; idea, if only for performance reasons.
-    (add-hook hook #'my-auto-dark-init-h -95)))
+;; (use-package! auto-dark
+;;   :defer t
+;;   :init
+;;   (when-let ((ember-theme-file (locate-library "ember-theme")))
+;;     (add-to-list 'custom-theme-load-path
+;;                  (file-name-directory ember-theme-file)))
+;;   (setq! auto-dark-detection-method 'osascript)
+;;   (setq! auto-dark-themes '((ember) (doom-tomorrow-day)))
+;;   ;; Disable doom's theme loading mechanism (just to make sure)
+;;   (setq! doom-theme nil)
+;;   ;; Declare that all themes are safe to load.
+;;   ;; Be aware that setting this variable may have security implications if you
+;;   ;; get tricked into loading untrusted themes (via auto-dark-mode or manually).
+;;   ;; See the documentation of custom-safe-themes for details.
+;;   (setq! custom-safe-themes t)
+;;   ;; Enable auto-dark-mode at the right point in time.
+;;   ;; This is inspired by doom-ui.el. Using server-after-make-frame-hook avoids
+;;   ;; issues with an early start of the emacs daemon using systemd, which causes
+;;   ;; problems with the DBus connection that auto-dark mode relies upon.
+;;   (defun my-auto-dark-init-h ()
+;;     (auto-dark-mode)
+;;     (remove-hook 'server-after-make-frame-hook #'my-auto-dark-init-h)
+;;     (remove-hook 'after-init-hook #'my-auto-dark-init-h))
+;;   (let ((hook (if (daemonp)
+;;                   'server-after-make-frame-hook
+;;                 'after-init-hook)))
+;;     ;; Depth -95 puts this before doom-init-theme-h, which sounds like a good
+;;     ;; idea, if only for performance reasons.
+;;     (add-hook hook #'my-auto-dark-init-h -95)))
 
 ;; --------------------------------------------------
 ;; lsp shit
@@ -402,7 +412,39 @@
 ;; --------------------------------------------------
 (after! vterm
   (define-key vterm-mode-map (kbd "C-<escape>") #'vterm-send-escape)
-  (define-key vterm-mode-map (kbd "C-M-[") #'vterm-send-escape))
+  (define-key vterm-mode-map (kbd "C-M-[") #'vterm-send-escape)
+  ;; Force a sane 256-color terminfo so colors render.
+  (setq vterm-environment '("TERM=xterm-256color"))
+  ;; Keep TUI rendering aligned with the window: no pixel scroll, no margins,
+  ;; no line numbers, no hl-line. Otherwise the top/bottom rows get clipped
+  ;; under the modeline because absolute-positioned redraws misalign.
+  (add-hook 'vterm-mode-hook
+            (lambda ()
+              (when (bound-and-true-p ultra-scroll-mode)
+                (ultra-scroll-mode -1))
+              (when (bound-and-true-p pixel-scroll-precision-mode)
+                (pixel-scroll-precision-mode -1))
+              ;; Force a single uniform-height font for the whole buffer.
+              ;; JBM-Nerd has both text + Nerd glyphs, so nothing falls back
+              ;; to a taller font that would clip rows under the modeline.
+              (setq-local buffer-face-mode-face
+                          '(:family "JetBrainsMono Nerd Font Mono"))
+              (buffer-face-mode 1)
+              (setq-local scroll-margin 0
+                          scroll-conservatively 101
+                          hscroll-margin 0
+                          truncate-lines t
+                          ;; Force 0 (not nil = inherit frame default) so a
+                          ;; tall fallback glyph can't widen this line and
+                          ;; eat a row out of vterm's reported height.
+                          line-spacing 0)
+              ;; Lock line pixel-height to the base font's metrics so even if
+              ;; a fallback glyph is technically taller, the row doesn't grow.
+              (face-remap-add-relative 'default
+                                       :height (face-attribute 'default :height))
+              (setq-local header-line-format nil)
+              (display-line-numbers-mode -1)
+              (hl-line-mode -1))))
 
 ;; --------------------------------------------------
 ;; eee.el - launch TUI tools (fzf, yazi, lazygit, etc.) in external terminal
@@ -477,6 +519,19 @@
 
 
 ;; --------------------------------------------------
+;; Ghostel - libghostty-vt terminal emulator
+;; Native module auto-downloads on first use.
+;; --------------------------------------------------
+(use-package! ghostel
+  :defer t
+  :commands (ghostel ghostel-project ghostel-other))
+
+(use-package! evil-ghostel
+  :after (ghostel evil)
+  :hook (ghostel-mode . evil-ghostel-mode))
+
+
+;; --------------------------------------------------
 ;; ShaderView - Real-time GLSL shader preview
 ;; --------------------------------------------------
 (use-package! shaderview
@@ -491,12 +546,16 @@
 ;; Org image
 ;; --------------------------------------------------
 (after! org-download
-      (setq org-download-method 'directory)
-      (setq org-download-image-dir (concat (file-name-sans-extension (buffer-file-name)) "-img"))
-      (setq org-download-image-org-width 600)
-      (setq org-download-link-format "[[file:%s]]\n"
-        org-download-abbreviate-filename-function #'file-relative-name)
-      (setq org-download-link-format-function #'org-download-link-format-function-default))
+  (setq org-download-method 'directory
+        org-download-image-org-width 600
+        org-download-link-format "[[file:%s]]\n"
+        org-download-abbreviate-filename-function #'file-relative-name
+        org-download-link-format-function #'org-download-link-format-function-default)
+  (defun my/org-download-set-image-dir-h ()
+    (when buffer-file-name
+      (setq-local org-download-image-dir
+                  (concat (file-name-sans-extension buffer-file-name) "-img"))))
+  (add-hook 'org-mode-hook #'my/org-download-set-image-dir-h))
 
 (map! :after org-download
       :map org-mode-map
