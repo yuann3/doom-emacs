@@ -11,6 +11,9 @@
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
+(setq! +modeline-bar-width 3)
+(setq doom-modeline-height 25)
+
 ;; --------------------------------------------------
 ;; Basic identity & tweaking
 ;; --------------------------------------------------
@@ -56,8 +59,6 @@
     (dolist (fontset '(t "fontset-default"))
       ;; Use JetBrainsMono Nerd Font for symbols (prevents ASCII->emoji weirdness)
       (set-fontset-font fontset 'symbol "JetBrainsMono Nerd Font Mono")
-      ;; Keep Apple Color Emoji for actual emoji characters
-      (set-fontset-font fontset 'emoji "Apple Color Emoji")
       ;; Fallback for anything not covered
       (set-fontset-font fontset 'symbol "Apple Symbols" nil 'append))))
 
@@ -80,15 +81,29 @@
 ;; --------------------------------------------------
 ;; Visual defaults
 ;; --------------------------------------------------
-(setq doom-theme 'doom-tomorrow-night-hc)
+(setq doom-theme 'base16-gruvbox-material-dark-hard)
 ;; (setq catppuccin-flavor 'mocha) ;; 'latte, 'macchiato, or 'mocha
 ;; (setq display-line-numbers-type 'relative)
 (setq org-directory "~/Documents/Notes/org")
 
 ;; --------------------------------------------------
+;; Spacious Padding
+;; --------------------------------------------------
+(use-package! spacious-padding
+  :hook (doom-init-ui . spacious-padding-mode)
+  :config
+  (setq spacious-padding-widths
+        '( :internal-border-width 10
+           :header-line-width 4
+           :mode-line-width 5
+           :tab-width 4
+           :right-divider-width 30
+           :scroll-bar-width 8
+           :fringe-width 8)))
+
+;; --------------------------------------------------
 ;; Modeline (+light) & Nyan Cat
 ;; --------------------------------------------------
-(setq! +modeline-bar-width 3)
 
 ;; (use-package! nyan-mode
 ;;   :hook (doom-init-ui . nyan-mode)
@@ -478,9 +493,9 @@
 ;; --------------------------------------------------
 ;; Winpulse - flash active window on focus
 ;; --------------------------------------------------
-(use-package! winpulse
-  :config
-  (winpulse-mode +1))
+;; (use-package! winpulse
+;;   :config
+;;   (winpulse-mode +1))
 
 ;; --------------------------------------------------
 ;; Linear.app

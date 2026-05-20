@@ -75,8 +75,8 @@
 (package! ob-racket
   :recipe (:host github :repo "hasu/emacs-ob-racket"
            :files ("*.el" "*.rkt")))
-(package! winpulse
-  :recipe (:host github :repo "xenodium/winpulse"))
+;; (package! winpulse
+;;   :recipe (:host github :repo "xenodium/winpulse"))
 (package! linear-app
   :recipe (:local-repo "~/Developer/linear-app.el"
            :files ("*.el")))
@@ -99,3 +99,5 @@
 (package! evil-ghostel
   :recipe (:host github :repo "dakra/ghostel"
            :files ("extensions/evil-ghostel/*.el")))
+(package! spacious-padding
+  :recipe (:host github :repo "protesilaos/spacious-padding"))
